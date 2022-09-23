@@ -5,16 +5,27 @@
 #include <math.h>
 #include <errno.h>
 
-#define SAMPLE_RATE                 44100
-#define BITS_PER_SAMPLE             16
-#define NUM_CHANNELS                1
+#define WAV_SAMPLE_RATE             44100
+#define WAV_BITS_PER_SAMPLE         16
+#define WAV_NUM_CHANNELS            1
+#define WAV_MAX_AMPLITUDE           8192            // The volume of the output WAV
+#define WAV_BEEP_FREQ               880             // Equivalent to the note A
+#define WAV_BYTES_PER_SEC           ((WAV_SAMPLE_RATE * WAV_BITS_PER_SAMPLE * WAV_NUM_CHANNELS) / 8)
+
 #define FULL_CIRCLE_DEGREES         360
-#define MAX_AMPLITUDE               8192            // The volume of the output WAV
-#define BEEP_FREQ                   880             // Equivalent to the note A
 #define PI                          3.1415926535
 #define DEGREE_TO_RADIANS           (PI / 180.0)
 
-#define BYTES_PER_SEC               ((SAMPLE_RATE * BITS_PER_SAMPLE * NUM_CHANNELS) / 8)
+#define MORSE_DIT_DURATION          0.25
+
+/*
+** The following are defined by the International Telecommunication Union (ITU)
+** and should not be changed...
+*/
+#define ITU_DAH_DURATION            (MORSE_DIT_DURATION * 3.0)
+#define ITU_SPCE_DURATION           MORSE_DIT_DURATION
+#define ITU_CHAR_SEPARATOR          (MORSE_DIT_DURATION * 3.0)
+#define ITU_WORD_SEPARATOR          (MORSE_DIT_DURATION * 7.0)
 
 typedef struct __attribute__((__packed__)) {
     char            id[4];
@@ -87,8 +98,8 @@ int main(int argc, char ** argv)
         exit(-1);
     }
 
-    frequency = BEEP_FREQ;
-    numSamples = SAMPLE_RATE * wavLength;
+    frequency = WAV_BEEP_FREQ;
+    numSamples = WAV_SAMPLE_RATE * wavLength;
 
     memcpy(wave.id, "RIFF", 4);
     memcpy(wave.type, "WAVE", 4);
@@ -96,15 +107,15 @@ int main(int argc, char ** argv)
     memcpy(wave.formatChunk.id, "fmt ", 4);
     wave.formatChunk.length = 16;
     wave.formatChunk.tag = 1;
-    wave.formatChunk.numChannels = NUM_CHANNELS;
-    wave.formatChunk.sampleRate = SAMPLE_RATE;
-    wave.formatChunk.avgBytesPerSec = BYTES_PER_SEC;
+    wave.formatChunk.numChannels = WAV_NUM_CHANNELS;
+    wave.formatChunk.sampleRate = WAV_SAMPLE_RATE;
+    wave.formatChunk.avgBytesPerSec = WAV_BYTES_PER_SEC;
     wave.formatChunk.blockAlign = 2;
-    wave.formatChunk.bitsPerSample = BITS_PER_SAMPLE;
+    wave.formatChunk.bitsPerSample = WAV_BITS_PER_SAMPLE;
 
     memcpy(wave.dataChunk.id, "data", 4);
 
-    numSampleBytes = numSamples * (BITS_PER_SAMPLE / 8);
+    numSampleBytes = numSamples * (WAV_BITS_PER_SAMPLE / 8);
     samples = (int16_t *)malloc(numSampleBytes);
 
     if (samples == NULL) {
@@ -118,12 +129,12 @@ int main(int argc, char ** argv)
 
     wave.fileSize = fileLength - 8;;
 
-    sampleIntervalDegrees = (double)(FULL_CIRCLE_DEGREES * frequency) / (double)SAMPLE_RATE;
+    sampleIntervalDegrees = (double)(FULL_CIRCLE_DEGREES * frequency) / (double)WAV_SAMPLE_RATE;
 
     angle = 0.0;
 
     for (sampleNum = 0;sampleNum < numSamples;sampleNum++) {
-        samples[sampleNum] = (int16_t)(sin(angle * DEGREE_TO_RADIANS) * MAX_AMPLITUDE);
+        samples[sampleNum] = (int16_t)(sin(angle * DEGREE_TO_RADIANS) * WAV_MAX_AMPLITUDE);
 
         angle += sampleIntervalDegrees;
 
@@ -140,7 +151,7 @@ int main(int argc, char ** argv)
     }
 
     fwrite(&wave, 1, sizeof(WAV), fptr);
-    fwrite(samples, (BITS_PER_SAMPLE / 8), numSamples, fptr);
+    fwrite(samples, (WAV_BITS_PER_SAMPLE / 8), numSamples, fptr);
 
     fclose(fptr);
 
