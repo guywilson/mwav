@@ -2,3 +2,4 @@
 /dep
 mwav
 *.wav
+.vscode/settings.json

@@ -7,9 +7,104 @@
 
 #include "mwav.h"
 
+int16_t *   _ditSamples;
+int16_t *   _dahSamples;
+int16_t *   _spaceSamples;
+
 void printUsage()
 {
     printf("Usage:\n");
+}
+
+uint32_t buildDit()
+{
+    double          sampleIntervalDegrees;
+    double          angle;
+    uint32_t        numSamples;
+    uint32_t        numSampleBytes;
+    uint32_t        sampleNum;
+
+    numSamples = (uint32_t)((double)WAV_SAMPLE_RATE * (double)MORSE_DIT_DURATION);
+    numSampleBytes = numSamples * (WAV_BITS_PER_SAMPLE / 8);
+
+    _ditSamples = (int16_t *)malloc(numSampleBytes);
+
+    if (_ditSamples == NULL) {
+        fprintf(stderr, "Failed to allocate %u sample data bytes\n", numSampleBytes);
+        exit(-1);
+    }
+
+    sampleIntervalDegrees = (double)(FULL_CIRCLE_DEGREES * (double)WAV_BEEP_FREQ) / (double)WAV_SAMPLE_RATE;
+
+    angle = 0.0;
+
+    for (sampleNum = 0;sampleNum < numSamples;sampleNum++) {
+        _ditSamples[sampleNum] = (int16_t)(sin(angle * (double)DEGREE_TO_RADIANS) * (double)WAV_MAX_AMPLITUDE);
+
+        angle += sampleIntervalDegrees;
+
+        if (angle > 360.0) {
+            angle = angle - 360.0;
+        }
+    }
+
+    return numSampleBytes;
+}
+
+uint32_t buildDah()
+{
+    double          sampleIntervalDegrees;
+    double          angle;
+    uint32_t        numSamples;
+    uint32_t        numSampleBytes;
+    uint32_t        sampleNum;
+
+    numSamples = (uint32_t)((double)WAV_SAMPLE_RATE * (double)ITU_DAH_DURATION);
+    numSampleBytes = numSamples * (WAV_BITS_PER_SAMPLE / 8);
+
+    _dahSamples = (int16_t *)malloc(numSampleBytes);
+
+    if (_dahSamples == NULL) {
+        fprintf(stderr, "Failed to allocate %u sample data bytes\n", numSampleBytes);
+        exit(-1);
+    }
+
+    sampleIntervalDegrees = (double)(FULL_CIRCLE_DEGREES * (double)WAV_BEEP_FREQ) / (double)WAV_SAMPLE_RATE;
+
+    angle = 0.0;
+
+    for (sampleNum = 0;sampleNum < numSamples;sampleNum++) {
+        _dahSamples[sampleNum] = (int16_t)(sin(angle * (double)DEGREE_TO_RADIANS) * (double)WAV_MAX_AMPLITUDE);
+
+        angle += sampleIntervalDegrees;
+
+        if (angle > 360.0) {
+            angle = angle - 360.0;
+        }
+    }
+
+    return numSampleBytes;
+}
+
+uint32_t buildSpace()
+{
+    uint32_t        numSamples;
+    uint32_t        numSampleBytes;
+    uint32_t        sampleNum;
+
+    numSamples = (uint32_t)((double)WAV_SAMPLE_RATE * (double)ITU_SPCE_DURATION);
+    numSampleBytes = numSamples * (WAV_BITS_PER_SAMPLE / 8);
+
+    _spaceSamples = (int16_t *)malloc(numSampleBytes);
+
+    if (_spaceSamples == NULL) {
+        fprintf(stderr, "Failed to allocate %u sample data bytes\n", numSampleBytes);
+        exit(-1);
+    }
+
+    memset(_spaceSamples, 0, numSampleBytes);
+    
+    return numSampleBytes;
 }
 
 int main(int argc, char ** argv)
@@ -86,7 +181,7 @@ int main(int argc, char ** argv)
     angle = 0.0;
 
     for (sampleNum = 0;sampleNum < numSamples;sampleNum++) {
-        samples[sampleNum] = (int16_t)(sin(angle * DEGREE_TO_RADIANS) * WAV_MAX_AMPLITUDE);
+        samples[sampleNum] = (int16_t)(sin(angle * (double)DEGREE_TO_RADIANS) * (double)WAV_MAX_AMPLITUDE);
 
         angle += sampleIntervalDegrees;
 
