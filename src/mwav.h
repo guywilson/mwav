@@ -3,7 +3,8 @@
 #ifndef __INCL_MWAV
 #define __INCL_MWAV
 
-#define WAV_SAMPLE_RATE             44100
+//#define WAV_SAMPLE_RATE             44100
+#define WAV_SAMPLE_RATE             8100
 #define WAV_BITS_PER_SAMPLE         16
 #define WAV_NUM_CHANNELS            1
 #define WAV_MAX_AMPLITUDE           8192            // The volume of the output WAV

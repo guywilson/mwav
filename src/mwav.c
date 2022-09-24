@@ -18,7 +18,7 @@ int16_t *   _spaceSamples;
 void printUsage()
 {
     printf("Usage:\n");
-    printf("\tmwav -o <output file>\n\n");
+    printf("\tmwav -o <output WAV file>\n\n");
 }
 
 uint32_t buildDit()
