@@ -14,7 +14,7 @@
 #define PI                          3.1415926535
 #define DEGREE_TO_RADIANS           (PI / 180.0)
 
-#define MORSE_DIT_DURATION          0.25
+#define MORSE_DIT_DURATION          0.1
 
 /*
 ** The following are defined by the International Telecommunication Union (ITU)
@@ -24,6 +24,45 @@
 #define ITU_SPCE_DURATION           MORSE_DIT_DURATION
 #define ITU_CHAR_SEPARATOR          (MORSE_DIT_DURATION * 3.0)
 #define ITU_WORD_SEPARATOR          (MORSE_DIT_DURATION * 7.0)
+
+const char * morseCodes[] = {
+    ".-",       // A
+    "-...",     // B
+    "-.-.",     // C
+    "-..",      // D
+    ".",        // E
+    "..-.",     // F
+    "--.",      // G
+    "....",     // H
+    "..",       // I
+    ".---",     // J
+    "-.-",      // K
+    ".-..",     // L
+    "--",       // M
+    "-.",       // N
+    "---",      // O
+    ".--.",     // P
+    "--.-",     // Q
+    ".-.",      // R
+    "...",      // S
+    "-",        // T
+    "..-",      // U
+    "...-",     // V
+    ".--",      // W
+    "-..-",     // X
+    "-.--",     // Y
+    "--..",     // Z
+    ".----",    // 1
+    "..---",    // 2
+    "...--",    // 3
+    "....-",    // 4
+    ".....",    // 5
+    "-....",    // 6
+    "--...",    // 7
+    "---..",    // 8
+    "----.",    // 9
+    "-----",    // 0
+};
 
 typedef struct __attribute__((__packed__)) {
     char            id[4];
