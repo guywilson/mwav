@@ -18,6 +18,7 @@ int16_t *   _spaceSamples;
 void printUsage()
 {
     printf("Usage:\n");
+    printf("\tmwav -o <output file>\n\n");
 }
 
 uint32_t buildDit()
@@ -131,8 +132,6 @@ const char * getMorseChar(char c)
     else {
         return NULL;
     }
-
-    printf("Found morse code '%s' for character '%c'\n", morse, ch);
 
     return morse;
 }
