@@ -15,7 +15,7 @@
 #define PI                          3.1415926535
 #define DEGREE_TO_RADIANS           (PI / 180.0)
 
-#define MORSE_DIT_DURATION          0.1
+#define MORSE_DIT_DURATION          0.08
 
 /*
 ** The following are defined by the International Telecommunication Union (ITU)
