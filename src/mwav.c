@@ -21,13 +21,31 @@ void printUsage()
     printf("\tmwav -o <output WAV file>\n\n");
 }
 
-uint32_t buildDit()
+void createSineWave(int16_t * samples, uint32_t numSamples)
 {
     double          sampleIntervalDegrees;
     double          angle;
+    uint32_t        sampleNum;
+
+    sampleIntervalDegrees = (double)(FULL_CIRCLE_DEGREES * (double)WAV_BEEP_FREQ) / (double)WAV_SAMPLE_RATE;
+
+    angle = 0.0;
+
+    for (sampleNum = 0;sampleNum < numSamples;sampleNum++) {
+        samples[sampleNum] = (int16_t)(sin(angle * (double)DEGREE_TO_RADIANS) * (double)WAV_MAX_AMPLITUDE);
+
+        angle += sampleIntervalDegrees;
+
+        if (angle > 360.0) {
+            angle = angle - 360.0;
+        }
+    }
+}
+
+uint32_t buildDit()
+{
     uint32_t        numSamples;
     uint32_t        numSampleBytes;
-    uint32_t        sampleNum;
 
     numSamples = (uint32_t)((double)WAV_SAMPLE_RATE * (double)MORSE_DIT_DURATION);
     numSampleBytes = numSamples * (WAV_BITS_PER_SAMPLE / 8);
@@ -39,30 +57,15 @@ uint32_t buildDit()
         exit(-1);
     }
 
-    sampleIntervalDegrees = (double)(FULL_CIRCLE_DEGREES * (double)WAV_BEEP_FREQ) / (double)WAV_SAMPLE_RATE;
-
-    angle = 0.0;
-
-    for (sampleNum = 0;sampleNum < numSamples;sampleNum++) {
-        _ditSamples[sampleNum] = (int16_t)(sin(angle * (double)DEGREE_TO_RADIANS) * (double)WAV_MAX_AMPLITUDE);
-
-        angle += sampleIntervalDegrees;
-
-        if (angle > 360.0) {
-            angle = angle - 360.0;
-        }
-    }
+    createSineWave(_ditSamples, numSamples);
 
     return numSamples;
 }
 
 uint32_t buildDah()
 {
-    double          sampleIntervalDegrees;
-    double          angle;
     uint32_t        numSamples;
     uint32_t        numSampleBytes;
-    uint32_t        sampleNum;
 
     numSamples = (uint32_t)((double)WAV_SAMPLE_RATE * (double)ITU_DAH_DURATION);
     numSampleBytes = numSamples * (WAV_BITS_PER_SAMPLE / 8);
@@ -74,19 +77,7 @@ uint32_t buildDah()
         exit(-1);
     }
 
-    sampleIntervalDegrees = (double)(FULL_CIRCLE_DEGREES * (double)WAV_BEEP_FREQ) / (double)WAV_SAMPLE_RATE;
-
-    angle = 0.0;
-
-    for (sampleNum = 0;sampleNum < numSamples;sampleNum++) {
-        _dahSamples[sampleNum] = (int16_t)(sin(angle * (double)DEGREE_TO_RADIANS) * (double)WAV_MAX_AMPLITUDE);
-
-        angle += sampleIntervalDegrees;
-
-        if (angle > 360.0) {
-            angle = angle - 360.0;
-        }
-    }
+    createSineWave(_dahSamples, numSamples);
 
     return numSamples;
 }
@@ -136,6 +127,23 @@ const char * getMorseChar(char c)
     return morse;
 }
 
+void unitTest(int testNum)
+{
+    char        c;
+    int         i;
+
+    switch (testNum) {
+        case 1:
+            c = 'A';
+
+            for (i = 0;i < 26;i++) {
+                printf("'%c' = '%s'\n", c, getMorseChar(c));
+                c++;
+            }
+            break;
+    }
+}
+
 int main(int argc, char ** argv)
 {
     WAV             wave;
@@ -155,6 +163,8 @@ int main(int argc, char ** argv)
     size_t          messageLen;
     size_t          morseLen;
     size_t          sampleSize;
+
+    //unitTest(1);
 
     if (argc > 1) {
         for (i = 1;i < argc;i++) {
