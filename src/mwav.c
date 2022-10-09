@@ -200,7 +200,7 @@ int main(int argc, char ** argv)
     memcpy(wave.dataChunk.id, "data", 4);
 
     printf("Enter message: ");
-    fgets(szMessage, MAX_MESSAGE_LEN, stdin);
+    fgets(szMessage, (MAX_MESSAGE_LEN - 1), stdin);
 
     messageLen = strlen(szMessage);
 
