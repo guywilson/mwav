@@ -28,6 +28,7 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP)/$*.Td
 
 # Libraries
 STDLIBS =
+EXTLIBS = -lm
 
 COMPILE.c = $(C) $(CFLAGS) $(DEPFLAGS) -o $@
 LINK.o = $(LINKER) $(STDLIBS) -o $@
